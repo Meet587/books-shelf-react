@@ -1,69 +1,84 @@
-# React + TypeScript + Vite
+# Books Shelf - React Application
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern bookshelf application built with React, TypeScript, and Vite. This application allows users to manage and organize their books with features like search, pagination, and favorites.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Browse and search books
+- Add books to favorites
+- Pagination for better navigation
+- Modern UI with Tailwind CSS
+- Redux for state management
+- TypeScript for type safety
+- Fast development with Vite
 
-## Expanding the ESLint configuration
+## Tech Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **Frontend**: React 19, TypeScript, Vite
+- **UI**: Tailwind CSS, Radix UI components
+- **State Management**: Redux Toolkit with Redux Persist
+- **Routing**: React Router
+- **Development Tools**: ESLint, TypeScript ESLint
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Getting Started
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+### Prerequisites
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- Node.js (v18 or higher recommended)
+- npm or yarn
+
+### Installation
+
+1. Clone the repository
+```bash
+git clone [repository-url]
+cd books-shelf
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+2. Install dependencies
+```bash
+npm install
+# or
+yarn install
 ```
+
+3. Start the development server
+```bash
+npm run dev
+# or
+yarn dev
+```
+
+The application will be available at `http://localhost:5173`
+
+### Available Scripts
+
+- `npm run dev` - Starts the development server with hot reload
+- `npm run build` - Builds the application for production
+- `npm run preview` - Previews the production build
+- `npm run lint` - Runs ESLint for code linting
+
+## Project Structure
+
+```
+src/
+├── components/      # Reusable UI components
+├── helpers/         # Utility functions
+├── pages/           # Page components
+├── public/          # Static assets
+└── types/           # TypeScript type definitions
+```
+
+## Development
+
+The project uses TypeScript for type safety and Vite for fast development. The UI is built with Tailwind CSS and Radix UI components for accessibility.
+
+### State Management
+
+The application uses Redux Toolkit for state management with Redux Persist for data persistence.
+
+### Code Style
+
+The project follows ESLint rules for consistent code style and includes React-specific lint rules.
+
+

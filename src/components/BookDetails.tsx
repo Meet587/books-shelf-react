@@ -197,7 +197,7 @@ const BookDetails = ({ bookId }: BookDetailsProps) => {
     volumeInfo.imageLinks?.medium ||
     volumeInfo.imageLinks?.thumbnail ||
     volumeInfo.imageLinks?.smallThumbnail;
-
+console.log(bestImage)
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
@@ -231,10 +231,10 @@ const BookDetails = ({ bookId }: BookDetailsProps) => {
                   <div className="aspect-[3/4] relative mb-4">
                     {bestImage ? (
                       <img
-                        src={
-                          bestImage.replace("http:", "https:") ||
-                          "/placeholder.svg"
-                        }
+                        src={bestImage.replace(
+                          "http://books.google.com",
+                          ""
+                        )}
                         alt={volumeInfo.title}
                         width={300}
                         height={400}
@@ -242,8 +242,8 @@ const BookDetails = ({ bookId }: BookDetailsProps) => {
                         crossOrigin="anonymous"
                       />
                     ) : (
-                      <div className="w-full h-full bg-muted rounded-lg flex items-center justify-center">
-                        <BookOpen className="h-16 w-16 text-muted-foreground" />
+                      <div className="w-full h-full bg-muted flex items-center justify-center rounded-lg">
+                        <BookOpen className="w-16 h-16 text-muted-foreground" />
                       </div>
                     )}
                   </div>
