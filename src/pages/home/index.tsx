@@ -74,7 +74,7 @@ export default function Home() {
   });
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
-  const [itemsPerPage] = useState(12);
+  const [itemsPerPage] = useState(40);
 
   const favorites = useSelector((state: RootState) => state.favorite.favorites);
   const favoritesCount = favorites.length;

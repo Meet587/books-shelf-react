@@ -43,8 +43,8 @@ const BookFeature = ({
                         <img
                           src={
                             book.volumeInfo.imageLinks.thumbnail.replace(
-                              "http:",
-                              "https:"
+                              "http://books.google.com",
+                              ""
                             ) || "/placeholder.svg"
                           }
                           alt={book.volumeInfo.title}

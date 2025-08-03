@@ -11,4 +11,13 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  server: {
+    proxy: {
+      "/books": {
+        target: "https://books.google.com",
+        changeOrigin: true,
+        secure: false,
+      },
+    },
+  },
 });
