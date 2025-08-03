@@ -2,6 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import type { RootState } from "@/store/store";
 import {
   ArrowLeft,
   BookOpen,
@@ -9,11 +10,14 @@ import {
   ExternalLink,
   FileText,
   Globe,
+  Heart,
   Star,
   Users,
 } from "lucide-react";
 import { memo, useEffect, useState } from "react";
-import { useNavigate } from "react-router";
+import { useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router";
+import { FavoriteButton } from "./favorite-button";
 
 interface BookDetails {
   id: string;
@@ -100,6 +104,9 @@ const BookDetails = ({ bookId }: BookDetailsProps) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+
+  const favorites = useSelector((state: RootState) => state.favorite.favorites);
+  const favoritesCount = favorites.length;
 
   const handleGoBack = () => {
     navigate(-1);
@@ -195,10 +202,27 @@ const BookDetails = ({ bookId }: BookDetailsProps) => {
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
-          <Button variant="ghost" className="mb-6" onClick={handleGoBack}>
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Search
-          </Button>
+          <div className="flex items-center justify-between mb-6">
+            <Button variant="ghost" onClick={handleGoBack}>
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Search
+            </Button>
+            <Link to="/favorites">
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2 bg-transparent"
+              >
+                <Heart className="h-4 w-4" />
+                Favorites
+                {favoritesCount > 0 && (
+                  <span className="bg-primary text-primary-foreground text-xs px-1.5 py-0.5 rounded-full">
+                    {favoritesCount}
+                  </span>
+                )}
+              </Button>
+            </Link>
+          </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-1">
@@ -222,6 +246,14 @@ const BookDetails = ({ bookId }: BookDetailsProps) => {
                         <BookOpen className="h-16 w-16 text-muted-foreground" />
                       </div>
                     )}
+                  </div>
+
+                  <div className="flex justify-center mb-4">
+                    <FavoriteButton
+                      book={book}
+                      size="default"
+                      className="bg-background border shadow-sm hover:bg-accent"
+                    />
                   </div>
 
                   <div className="space-y-2">

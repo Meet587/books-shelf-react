@@ -1,6 +1,7 @@
 import type { SearchFilters } from "@/pages/home";
 import { Label } from "@radix-ui/react-label";
 import { Loader2, Search } from "lucide-react";
+import { memo } from "react";
 import { Button } from "./ui/button";
 import { Card, CardContent } from "./ui/card";
 import { Input } from "./ui/input";
@@ -86,4 +87,4 @@ const SearchCard = ({
   );
 };
 
-export default SearchCard;
+export default memo(SearchCard);
