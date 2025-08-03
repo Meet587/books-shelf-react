@@ -2,7 +2,8 @@ import BookFeature from "@/components/BookFeature";
 import Pagination from "@/components/Pagination";
 import SearchCard from "@/components/SearchCard";
 import { BookOpen } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router";
 
 export interface Book {
   id: string;
@@ -24,9 +25,12 @@ export interface SearchFilters {
   title: string;
   author: string;
   genre: string;
+  currentPage?: string;
 }
 
 export default function Home() {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [books, setBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -39,6 +43,46 @@ export default function Home() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [itemsPerPage] = useState(12);
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const params = extractQueryParams(searchParams);
+    if (params.title) {
+      setFilters((prev) => ({
+        ...prev,
+        title: params.title,
+      }));
+    }
+    if (params.author) {
+      setFilters((prev) => ({
+        ...prev,
+        author: params.author,
+      }));
+    }
+    if (params.genre) {
+      setFilters((prev) => ({
+        ...prev,
+        genre: params.genre,
+      }));
+    }
+    if (params.currentPage) {
+      setCurrentPage(Number(params.currentPage));
+    }
+  }, []);
+
+  useEffect(() => {
+    searchBooks(null as any, currentPage);
+  }, [filters]);
+
+  const extractQueryParams = (searchParams: URLSearchParams) => {
+    const params: SearchFilters = {
+      title: searchParams.get("title") || "",
+      author: searchParams.get("author") || "",
+      genre: searchParams.get("genre") || "",
+      currentPage: searchParams.get("currentPage") || "",
+    };
+    return params;
+  };
 
   const buildSearchQuery = (filters: SearchFilters): string => {
     const queryParts: string[] = [];
@@ -87,6 +131,15 @@ export default function Home() {
         throw new Error("Failed to fetch books");
       }
 
+      const pathname = location.pathname;
+      const searchParams = new URLSearchParams(location.search);
+      searchParams.set("title", filters.title);
+      searchParams.set("author", filters.author);
+      searchParams.set("genre", filters.genre);
+      searchParams.set("currentPage", page.toString());
+      const nextLocation = { pathname, search: searchParams.toString() };
+      navigate(nextLocation);
+
       const data = await response.json();
       setBooks(data.items || []);
       setTotalItems(data.totalItems || 0);
@@ -108,6 +161,11 @@ export default function Home() {
   };
 
   const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+  const resetPagination = () => {
+    setCurrentPage(1);
+    setTotalItems(0);
+  };
 
   const handleInputChange = (field: keyof SearchFilters, value: string) => {
     setFilters((prev) => ({ ...prev, [field]: value }));
@@ -138,6 +196,7 @@ export default function Home() {
             filters={filters}
             loading={loading}
             error={error}
+            resetPagination={resetPagination}
           />
 
           <BookFeature

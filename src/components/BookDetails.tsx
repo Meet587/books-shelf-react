@@ -12,8 +12,8 @@ import {
   Star,
   Users,
 } from "lucide-react";
-import { useEffect, useState } from "react";
-import { Link } from "react-router";
+import { memo, useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 
 interface BookDetails {
   id: string;
@@ -99,6 +99,11 @@ const BookDetails = ({ bookId }: BookDetailsProps) => {
   const [book, setBook] = useState<BookDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
+
+  const handleGoBack = () => {
+    navigate(-1);
+  };
 
   useEffect(() => {
     const fetchBookDetails = async () => {
@@ -161,12 +166,11 @@ const BookDetails = ({ bookId }: BookDetailsProps) => {
       <div className="min-h-screen bg-background">
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-4xl mx-auto">
-            <Link to="/">
-              <Button variant="ghost" className="mb-6">
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to Search
-              </Button>
-            </Link>
+            <Button variant="ghost" className="mb-6" onClick={handleGoBack}>
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Search
+            </Button>
+
             <div className="text-center py-12">
               <BookOpen className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
               <h3 className="text-lg font-semibold mb-2">Book not found</h3>
@@ -191,12 +195,10 @@ const BookDetails = ({ bookId }: BookDetailsProps) => {
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
-          <Link to="/">
-            <Button variant="ghost" className="mb-6">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Search
-            </Button>
-          </Link>
+          <Button variant="ghost" className="mb-6" onClick={handleGoBack}>
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Search
+          </Button>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-1">
@@ -458,4 +460,4 @@ const BookDetails = ({ bookId }: BookDetailsProps) => {
   );
 };
 
-export default BookDetails;
+export default memo(BookDetails);

@@ -11,18 +11,26 @@ const SearchCard = ({
   filters,
   loading,
   error,
+  resetPagination,
 }: {
   handleInputChange: (field: keyof SearchFilters, value: string) => void;
   searchBooks: (e: React.FormEvent) => void;
   filters: SearchFilters;
   loading: boolean;
   error: string | null;
+  resetPagination: () => void;
 }) => {
   return (
     <>
       <Card className="mb-8">
         <CardContent className="p-6">
-          <form onSubmit={searchBooks} className="space-y-4">
+          <form
+            onSubmit={(e) => {
+              resetPagination();
+              searchBooks(e);
+            }}
+            className="space-y-4"
+          >
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="title">Title</Label>
