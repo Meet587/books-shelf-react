@@ -1,22 +1,55 @@
 import BookFeature from "@/components/BookFeature";
 import Pagination from "@/components/Pagination";
 import SearchCard from "@/components/SearchCard";
-import { BookOpen } from "lucide-react";
-import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { debounce } from "@/helpers/debounce";
+import type { RootState } from "@/store/store";
+import { BookOpen, Heart } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { Link, useLocation, useNavigate } from "react-router";
 
 export interface Book {
   id: string;
   volumeInfo: {
     title: string;
+    subtitle?: string;
     authors?: string[];
-    description?: string;
-    imageLinks?: {
-      thumbnail: string;
-      smallThumbnail: string;
-    };
+    publisher?: string;
     publishedDate?: string;
+    description?: string;
+    industryIdentifiers?: Array<{
+      type: string;
+      identifier: string;
+    }>;
+    readingModes?: {
+      text: boolean;
+      image: boolean;
+    };
     pageCount?: number;
+    printType?: string;
     categories?: string[];
+    averageRating?: number;
+    ratingsCount?: number;
+    maturityRating?: string;
+    allowAnonLogging?: boolean;
+    contentVersion?: string;
+    panelizationSummary?: {
+      containsEpubBubbles: boolean;
+      containsImageBubbles: boolean;
+    };
+    imageLinks?: {
+      smallThumbnail?: string;
+      thumbnail?: string;
+      small?: string;
+      medium?: string;
+      large?: string;
+      extraLarge?: string;
+    };
+    language?: string;
+    previewLink?: string;
+    infoLink?: string;
+    canonicalVolumeLink?: string;
   };
 }
 
@@ -24,9 +57,12 @@ export interface SearchFilters {
   title: string;
   author: string;
   genre: string;
+  currentPage?: string;
 }
 
 export default function Home() {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [books, setBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -39,6 +75,46 @@ export default function Home() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [itemsPerPage] = useState(12);
+
+  const favorites = useSelector((state: RootState) => state.favorite.favorites);
+  const favoritesCount = favorites.length;
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const params = extractQueryParams(searchParams);
+
+    setFilters((prev) => ({
+      ...prev,
+      title: params.title ?? "",
+      author: params.author ?? "",
+      genre: params.genre ?? "",
+    }));
+
+    if (params.currentPage) {
+      setCurrentPage(Number(params.currentPage));
+    }
+  }, []);
+
+  const debounceSearch = debounce(
+    () => searchBooks(null as any, currentPage),
+    1000
+  );
+
+  useEffect(() => {
+    if (filters.title || filters.author || filters.genre) {
+      debounceSearch();
+    }
+  }, [filters]);
+
+  const extractQueryParams = (searchParams: URLSearchParams) => {
+    const params: SearchFilters = {
+      title: searchParams.get("title") || "",
+      author: searchParams.get("author") || "",
+      genre: searchParams.get("genre") || "",
+      currentPage: searchParams.get("currentPage") || "",
+    };
+    return params;
+  };
 
   const buildSearchQuery = (filters: SearchFilters): string => {
     const queryParts: string[] = [];
@@ -87,6 +163,15 @@ export default function Home() {
         throw new Error("Failed to fetch books");
       }
 
+      const pathname = location.pathname;
+      const searchParams = new URLSearchParams(location.search);
+      searchParams.set("title", filters.title);
+      searchParams.set("author", filters.author);
+      searchParams.set("genre", filters.genre);
+      searchParams.set("currentPage", page.toString());
+      const nextLocation = { pathname, search: searchParams.toString() };
+      navigate(nextLocation);
+
       const data = await response.json();
       setBooks(data.items || []);
       setTotalItems(data.totalItems || 0);
@@ -109,6 +194,11 @@ export default function Home() {
 
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
+  const resetPagination = () => {
+    setCurrentPage(1);
+    setTotalItems(0);
+  };
+
   const handleInputChange = (field: keyof SearchFilters, value: string) => {
     setFilters((prev) => ({ ...prev, [field]: value }));
   };
@@ -122,9 +212,27 @@ export default function Home() {
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-8">
-            <div className="flex items-center justify-center gap-2 mb-4">
-              <BookOpen className="h-8 w-8 text-primary" />
-              <h1 className="text-3xl font-bold">Book Search</h1>
+            <div className="flex items-center justify-between mb-4">
+              <div></div>
+              <div className="flex items-center justify-center gap-2 mb-4">
+                <BookOpen className="h-8 w-8 text-primary" />
+                <h1 className="text-3xl font-bold">Book Explorer</h1>
+              </div>
+              <Link to="/favorites">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex items-center gap-2 bg-transparent"
+                >
+                  <Heart className="h-4 w-4" />
+                  Favorites
+                  {favoritesCount > 0 && (
+                    <span className="bg-primary text-primary-foreground text-xs px-1.5 py-0.5 rounded-full">
+                      {favoritesCount}
+                    </span>
+                  )}
+                </Button>
+              </Link>
             </div>
             <p className="text-muted-foreground">
               Search for books by title, author, or genre using the Google Books
@@ -138,6 +246,7 @@ export default function Home() {
             filters={filters}
             loading={loading}
             error={error}
+            resetPagination={resetPagination}
           />
 
           <BookFeature

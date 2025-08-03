@@ -1,6 +1,7 @@
 import type { SearchFilters } from "@/pages/home";
 import { Label } from "@radix-ui/react-label";
 import { Loader2, Search } from "lucide-react";
+import { memo } from "react";
 import { Button } from "./ui/button";
 import { Card, CardContent } from "./ui/card";
 import { Input } from "./ui/input";
@@ -11,18 +12,26 @@ const SearchCard = ({
   filters,
   loading,
   error,
+  resetPagination,
 }: {
   handleInputChange: (field: keyof SearchFilters, value: string) => void;
   searchBooks: (e: React.FormEvent) => void;
   filters: SearchFilters;
   loading: boolean;
   error: string | null;
+  resetPagination: () => void;
 }) => {
   return (
     <>
       <Card className="mb-8">
         <CardContent className="p-6">
-          <form onSubmit={searchBooks} className="space-y-4">
+          <form
+            onSubmit={(e) => {
+              resetPagination();
+              searchBooks(e);
+            }}
+            className="space-y-4"
+          >
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="title">Title</Label>
@@ -78,4 +87,4 @@ const SearchCard = ({
   );
 };
 
-export default SearchCard;
+export default memo(SearchCard);

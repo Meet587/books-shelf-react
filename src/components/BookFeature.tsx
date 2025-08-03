@@ -1,6 +1,8 @@
 import type { Book } from "@/pages/home";
 import { BookOpen } from "lucide-react";
+import { memo } from "react";
 import { Link } from "react-router";
+import { FavoriteButton } from "./favorite-button";
 import { Card, CardContent } from "./ui/card";
 
 const BookFeature = ({
@@ -14,15 +16,6 @@ const BookFeature = ({
   hasSearched: boolean;
   truncateText: (text: string, maxLength: number) => string;
 }) => {
-  // const fetchImage = async (thumbnailUrl: string | undefined) => {
-  //   try {
-  //     const response = await fetch(thumbnailUrl || "");
-  //     const blob = await response.blob();
-  //     return URL.createObjectURL(blob) as string;
-  //   } catch (error) {
-  //     console.error("Error fetching image:", error);
-  //   }
-  // };
   return (
     <>
       {hasSearched && !loading && (
@@ -38,28 +31,21 @@ const BookFeature = ({
       {books.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {books.map((book) => (
-            <Link to={`/book/${book.id}`} key={book.id}>
-              <Card
-                key={book.id}
-                className="h-full flex flex-col hover:shadow-lg transition-shadow cursor-pointer"
-              >
+            <Link key={book.id} to={`/book/${book.id}`}>
+              <Card className="h-full flex flex-col hover:shadow-lg transition-shadow cursor-pointer relative">
                 <CardContent className="p-4 flex flex-col h-full">
+                  <div className="absolute top-2 right-2 z-10">
+                    <FavoriteButton book={book} />
+                  </div>
                   <div className="flex gap-4 mb-4">
                     <div className="flex-shrink-0">
                       {book.volumeInfo.imageLinks?.thumbnail ? (
                         <img
-                          // TODO: Image is not displaying
-                          // src={
-                          //   book.volumeInfo.imageLinks.thumbnail.replace(
-                          //     "http:",
-                          //     "https:"
-                          //   ) || "/placeholder.svg"
-                          // }
                           src={
-                            `https://images.weserv.nl/?url=${book.volumeInfo.imageLinks.thumbnail.replace(
+                            book.volumeInfo.imageLinks.thumbnail.replace(
                               "http:",
                               "https:"
-                            )}` || "/placeholder.svg"
+                            ) || "/placeholder.svg"
                           }
                           alt={book.volumeInfo.title}
                           width={80}
@@ -74,7 +60,7 @@ const BookFeature = ({
                         </div>
                       )}
                     </div>
-                    <div className="flex-1 min-w-0">
+                    <div className="flex-1 min-w-0 pr-8">
                       <h3 className="font-semibold text-sm leading-tight mb-2 line-clamp-2">
                         {book.volumeInfo.title}
                       </h3>
@@ -131,4 +117,4 @@ const BookFeature = ({
   );
 };
 
-export default BookFeature;
+export default memo(BookFeature);

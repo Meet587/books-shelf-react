@@ -1,5 +1,6 @@
 import type { Book } from "@/pages/home";
 import { Button } from "./ui/button";
+import { memo } from "react";
 
 const Pagination = ({
   books,
@@ -105,4 +106,4 @@ const Pagination = ({
   );
 };
 
-export default Pagination;
+export default memo(Pagination);
